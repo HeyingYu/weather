@@ -10,5 +10,6 @@ import java.util.concurrent.CompletableFuture;
 public interface WeatherService {
     List<Integer> findCityIdByName(String city);
     Map<String, Map> findCityNameById(int id);
-    CompletableFuture<Map<String, Map>> asyncCityWeatherDetails(String city);
+    Map<String, Map> findWeatherById(int id);
+    List<Map<String, Map>> asyncCityWeatherDetails(List<String> city);
 }
