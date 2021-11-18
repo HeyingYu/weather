@@ -1,7 +1,6 @@
-package com.example.search.pojo;
+package com.example.detail.pojo;
 
 import lombok.Data;
-
 
 @Data
 public class City {

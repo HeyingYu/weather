@@ -3,7 +3,9 @@ package com.example.search.service;
 
 import com.example.search.config.EndpointConfig;
 import com.example.search.pojo.City;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,13 +13,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class WeatherServiceImpl implements WeatherService{
-
+    @Autowired
     private final RestTemplate restTemplate;
 
-
+    @Autowired
     public WeatherServiceImpl(RestTemplate getRestTemplate) {
         this.restTemplate = getRestTemplate;
     }
@@ -40,6 +43,21 @@ public class WeatherServiceImpl implements WeatherService{
         Map<String, Map> ans = restTemplate.getForObject(EndpointConfig.queryWeatherById + id, HashMap.class);
         return ans;
     }
+
+    @Async("threadPoolTaskExecutor")
+    @Override
+    @Retryable(include = IllegalAccessError.class)
+    public CompletableFuture<Map<String, Map>> asyncCityWeatherDetails(String city){
+
+        List<Integer> cityIds = findCityIdByName(city);
+        Integer nextCityId = cityIds.iterator().next();
+
+        Map<String, Map> cityNames = findCityNameById(nextCityId);
+
+        return CompletableFuture.completedFuture(cityNames);
+    }
+
+
 }
 
 
